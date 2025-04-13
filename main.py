@@ -65,13 +65,15 @@ def handle_message(update: Update, context: CallbackContext):
         update.message.reply_text("📤 Envie o link do YouTube:")
     elif text == '❔ Ajuda':
         help_command(update, context)
-    elif "youtube.com" in text or "youtu.be" in text:
+    
+elif "youtube.com" in text or "youtu.be" in text:
     update.message.reply_text("⏳ Processando vídeo do YouTube...")
     video_url = baixar_youtube_video(text)
     if video_url:
         update.message.reply_video(video_url, caption="✅ Aqui está seu vídeo!", reply_markup=get_main_menu())
     else:
         update.message.reply_text("❌ Não consegui baixar. Tente outro link ou verifique o formato.")
+
 
     else:
         update.message.reply_text("⚠️ Link inválido. Envie um link do YouTube.")
