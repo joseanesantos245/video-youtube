@@ -45,12 +45,18 @@ Simples assim!""",
 
 def baixar_youtube_video(link):
     try:
-        yt = YouTube(link)
-        stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
-        file_path = stream.download(filename="video.mp4")
-        return file_path
-    except:
+        api_url = "https://youloader.app/api/button"
+        response = requests.post(api_url, json={"url": link}, timeout=15).json()
+
+        # Pega o primeiro link MP4 disponível (geralmente 720p ou 360p)
+        for video in response.get("video", []):
+            if "mp4" in video.get("type", ""):
+                return video["url"]
         return None
+    except Exception as e:
+        print(f"❌ Erro ao baixar vídeo: {e}")
+        return None
+
 
 def handle_message(update: Update, context: CallbackContext):
     text = update.message.text
@@ -60,14 +66,13 @@ def handle_message(update: Update, context: CallbackContext):
     elif text == '❔ Ajuda':
         help_command(update, context)
     elif "youtube.com" in text or "youtu.be" in text:
-        update.message.reply_text("⏳ Baixando vídeo...")
-        file_path = baixar_youtube_video(text)
-        if file_path:
-            with open(file_path, 'rb') as video:
-                update.message.reply_video(video, caption="✅ Aqui está seu vídeo!", reply_markup=get_main_menu())
-            os.remove(file_path)  # limpa o vídeo após envio
-        else:
-            update.message.reply_text("❌ Não consegui baixar. Verifique o link e tente novamente.")
+    update.message.reply_text("⏳ Processando vídeo do YouTube...")
+    video_url = baixar_youtube_video(text)
+    if video_url:
+        update.message.reply_video(video_url, caption="✅ Aqui está seu vídeo!", reply_markup=get_main_menu())
+    else:
+        update.message.reply_text("❌ Não consegui baixar. Tente outro link ou verifique o formato.")
+
     else:
         update.message.reply_text("⚠️ Link inválido. Envie um link do YouTube.")
 
