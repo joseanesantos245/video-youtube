@@ -1,6 +1,5 @@
 import os
 import requests
-from pytube import YouTube
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from flask import Flask
@@ -48,7 +47,6 @@ def baixar_youtube_video(link):
         api_url = "https://youloader.app/api/button"
         response = requests.post(api_url, json={"url": link}, timeout=15).json()
 
-        # Pega o primeiro link MP4 disponível (geralmente 720p ou 360p)
         for video in response.get("video", []):
             if "mp4" in video.get("type", ""):
                 return video["url"]
@@ -57,23 +55,22 @@ def baixar_youtube_video(link):
         print(f"❌ Erro ao baixar vídeo: {e}")
         return None
 
-
 def handle_message(update: Update, context: CallbackContext):
     text = update.message.text
 
     if text == '📽️ Baixar Vídeo YouTube':
         update.message.reply_text("📤 Envie o link do YouTube:")
+
     elif text == '❔ Ajuda':
         help_command(update, context)
-    
-elif "youtube.com" in text or "youtu.be" in text:
-    update.message.reply_text("⏳ Processando vídeo do YouTube...")
-    video_url = baixar_youtube_video(text)
-    if video_url:
-        update.message.reply_video(video_url, caption="✅ Aqui está seu vídeo!", reply_markup=get_main_menu())
-    else:
-        update.message.reply_text("❌ Não consegui baixar. Tente outro link ou verifique o formato.")
 
+    elif "youtube.com" in text or "youtu.be" in text:
+        update.message.reply_text("⏳ Processando vídeo do YouTube...")
+        video_url = baixar_youtube_video(text)
+        if video_url:
+            update.message.reply_video(video_url, caption="✅ Aqui está seu vídeo!", reply_markup=get_main_menu())
+        else:
+            update.message.reply_text("❌ Não consegui baixar. Tente outro link ou verifique o formato.")
 
     else:
         update.message.reply_text("⚠️ Link inválido. Envie um link do YouTube.")
