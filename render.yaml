@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: baixador-youtube
+    runtime: python
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: TELEGRAM_TOKEN
+        value: 7754664068:AAFGpPg9crBDZNMKD0tu1hmoDTvV0uL7NMY
+      - key: PORT
+        value: 10000

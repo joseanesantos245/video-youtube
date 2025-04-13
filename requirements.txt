@@ -1,0 +1,4 @@
+python-telegram-bot==13.7
+requests==2.31.0
+flask==2.3.2
+pytube==12.1.0
